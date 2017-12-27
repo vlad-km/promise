@@ -1,8 +1,8 @@
-;;; -*- mode:lisp; coding:windows-1251  -*-
+;;; -*- mode:lisp; coding:utf-8  -*-
 
 ;;; Lisp wrapper for JavaScript Promise
 ;;; This file is part of the MOREN Environment
-;;; Copyright © 2017 Vladimir Mezentsev
+;;; Copyright Â© 2017 Vladimir Mezentsev
 ;;;
 
 
