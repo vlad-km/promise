@@ -9,22 +9,21 @@
 ;;;
 ;;; (setq prom (#j:make_Instance #j:window "Promise" fn))
 ;;;
-(defvar *make-instance-proto*
-  (concat
-   "var make_Instance  =  function () {"
-   "   var args = [].concat(null,Array.prototype.slice.call(arguments,2));"
-   "   var fn = arguments[0][arguments[1]];"
-   "   return new (Function.prototype.bind.apply(fn,args))();"
-   "   };"))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+    (unless #j:make_Instance
+        (let ((make-instance-proto
+                "var make_Instance  =  function () {
+                     var args = [].concat(null,Array.prototype.slice.call(arguments,2));
+                     var fn = arguments[0][arguments[1]];
+                     return new (Function.prototype.bind.apply(fn,args))();
+                    };"))
+            (#j:eval make-instance-proto))))
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
     (unless (find-package :promise)
         (make-package :promise :use (list 'cl)))
-
-    (unless #j:make_Instance
-        (#j:eval *make-instance-proto*))
-
     )
 
 
