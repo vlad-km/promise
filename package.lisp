@@ -1,14 +1,10 @@
 ;;; -*- mode:lisp; coding:utf-8  -*-
 
 ;;; Lisp wrapper for JavaScript Promise
-;;; This file is part of the MOREN Environment
-;;; Copyright © 2017 Vladimir Mezentsev
+;;; This file is part of the promise package
+;;; Copyright © 2017,2018 Vladimir Mezentsev
 ;;;
 
-
-;;;
-;;; (setq prom (#j:make_Instance #j:window "Promise" fn))
-;;;
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
     (unless #j:make_Instance
@@ -21,16 +17,14 @@
             (#j:eval make-instance-proto))))
 
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-    (unless (find-package :promise)
-        (make-package :promise :use (list 'cl)))
-    )
-
-
-(in-package :promise)
-(export '(jscl::new jscl::oget jscl::concat jscl::list-to-vector))
-
-(in-package :cl-user)
+(defpackage #:promise
+  (:use #:cl)
+  (:export #:make
+           #:resolve #:reject
+           #:all #:race
+           #:then #:then-resolve
+           #:_catch
+           #:is-promise))
 
 
 ;;; EOF

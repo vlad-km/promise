@@ -1,55 +1,44 @@
 ;;; -*- mode:lisp; coding:utf-8  -*-
 
-;;; Lisp wrapper for Java Script Promise
-;;; This package is part of the MOREN Environment
-;;;
-;;; Copyright © 2017 Vladimir Mezentsev
+;;; Lisp wrapper for JavaScript Promise
+;;; This file is part of the promise package
+;;; Copyright © 2017,2018 Vladimir Mezentsev
 ;;;
 
 
 (in-package :promise)
+(export '(jscl::oget))
 
 ;;;
 ;;; MAKE
-;;;
 ;;; Arguments
 ;;;
 ;;;     fn - promise resolver. Function with two arguments
 ;;;          -> (lambda (resolve &optional reject))
-;;;
 ;;; => promise
-
 (defun make (fn)
     (#j:make_Instance #j:window "Promise" fn))
 
-(export '(make))
 
 ;;; RESOLVE
-;;;
 ;;; Arguments
 ;;;
 ;;;     val - Argument to be resolved by this Promise. Can also be a Promise
 ;;;           or a thenable to resolve
 ;;;
 ;;; => promise object that is resolved with the given value.
-;;;
 (defun resolve (val)
     (#j:Promise:resolve val))
 
-(export '(resolve))
 
 
 ;;; REJECT
-;;;
 ;;; => promise object that is rejected with the given reason
-;;;
 (defun reject (val)
     (#j:Promise:reject val))
 
-(export '(reject))
 
 ;;; ALL
-;;;
 ;;; Arguments
 ;;;
 ;;;     promises - promise's list
@@ -59,40 +48,25 @@
 ;;;    It rejects with the reason of the first promise that rejects.
 ;;;
 ;;; (promise:all (promise:resolve 11) (promise:resolve "Ok"))
-;;;
 (defun all (&rest promises)
-    (let ((ar (list-to-vector promises)))
+    (let ((ar (jscl::list-to-vector promises)))
         (#j:Promise:all ar)))
 
-(export '(all))
-
-
 ;;; RACE
-;;;
 ;;; Arguments
-;;;
 ;;;     promises - promise's list
 ;;;
-;;;
 ;;; => pending promise that resolves or reject
-;;;
 (defun race (&rest promises)
-    (let ((ar (list-to-vector promises)))
+    (let ((ar (jscl::list-to-vector promises)))
         (#j:Promise:race ar)))
-
-(export '(race))
-
 
 
 ;;; THEN
-;;;
 ;;; Arguments
-;;;
 ;;;     promise - promise
-;;;
 ;;;     ok     - onResolve
 ;;;               => (lambda (reason) ...)
-;;;
 ;;;     nok    - onReject
 ;;;              => (lambda (reason) ...)
 ;;; => promise
@@ -113,15 +87,9 @@
     (funcall ((oget promise "then" "bind") promise ok)))
 
 
-(export '(then then-resolve))
-
-
 ;;; _CATCH
-;;;
 ;;; Arguments
-;;;
 ;;;     promise - promise
-;;;
 ;;;     rej     - onRejected
 ;;;               => (lambda (reason) ...)
 ;;;
@@ -135,10 +103,20 @@
     (funcall ((oget promise "catch" "bind") promise fn)))
 
 
-(export '(_catch))
+;;; is promise predicate
+;;;
+;;; (promise:is-promise *somewhat)
+;;; => t if *somewhat has type promise
+;;;    nil in other cases
+(defun is-promise (obj)
+    (if (or (unless (jscl::objectp obj) t)
+            (listp obj)
+            (stringp obj)
+            (arrayp obj))
+        (return-from is-promise nil))
+    (if (functionp (oget obj "then")) t nil))
 
 
 
 (in-package :cl-user)
-
 ;;; EOF
